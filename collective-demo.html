@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collective — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FAF7F2;
+  --warm-white: #FFFEFB;
+  --ink: #1C1917;
+  --ink-light: #44403C;
+  --ink-muted: #78716C;
+  --green: #0A7E6E;
+  --green-light: #E8F5F2;
+  --green-mid: #B8DDD7;
+  --gold: #C9963A;
+  --gold-light: #FDF3E3;
+  --border: #E7E2DA;
+  --sidebar-w: 220px;
+  --champion: #7C3AED;
+  --champion-bg: #F3EFFE;
+  --champion-border: #C4B5FD;
+  --present: #2563EB;
+  --present-bg: #EFF6FF;
+  --present-border: #BFDBFE;
+  --passive: #C9963A;
+  --passive-bg: #FDF3E3;
+  --passive-border: #E5C07A;
+  --unseen: #78716C;
+  --unseen-bg: #F5F2ED;
+  --unseen-border: #E7E2DA;
+  --action: #DC2626;
+  --action-bg: #FEF2F2;
+  --action-border: #FECACA;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; font-weight:300; background:var(--cream); color:var(--ink); min-height:100vh; display:flex; }
+
+/* ── SIDEBAR ── */
+.sidebar { width:var(--sidebar-w); background:var(--ink); min-height:100vh; display:flex; flex-direction:column; position:fixed; left:0; top:0; bottom:0; z-index:100; }
+.sidebar-logo { padding:28px 24px 24px; border-bottom:1px solid rgba(255,255,255,0.08); }
+.sidebar-logo .wordmark { font-family:'Playfair Display',serif; font-size:18px; color:#FFFEFB; letter-spacing:0.04em; }
+.sidebar-logo .tagline { font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:0.12em; text-transform:uppercase; margin-top:3px; }
+.sidebar-nav { padding:16px 12px; flex:1; }
+.nav-section-label { font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.25); padding:12px 12px 6px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; color:rgba(255,255,255,0.5); font-size:13px; transition:all 0.15s; margin-bottom:1px; }
+.nav-item:hover { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.8); }
+.nav-item.active { background:var(--green); color:white; }
+.nav-icon { font-size:15px; width:18px; text-align:center; }
+.sidebar-footer { padding:16px 12px; border-top:1px solid rgba(255,255,255,0.08); }
+.teacher-chip { display:flex; align-items:center; gap:10px; padding:8px 12px; }
+.teacher-avatar { width:30px; height:30px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; font-size:12px; color:white; font-weight:500; }
+.teacher-name { font-size:12px; color:rgba(255,255,255,0.6); }
+.teacher-role { font-size:10px; color:rgba(255,255,255,0.3); }
+
+/* ── MAIN ── */
+.main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+
+/* ── PAGES ── */
+.page { display:none; flex-direction:column; flex:1; }
+.page.active { display:flex; }
+
+/* ── TOPBAR ── */
+.topbar { background:var(--warm-white); border-bottom:1px solid var(--border); padding:0 32px; height:60px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+.topbar-left { display:flex; align-items:center; gap:12px; }
+.page-title { font-family:'Playfair Display',serif; font-size:20px; }
+.class-badge { background:var(--green-light); color:var(--green); font-size:11px; padding:3px 10px; border-radius:20px; font-weight:500; }
+.group-tabs { display:flex; gap:6px; }
+.group-tab { padding:4px 12px; border-radius:20px; font-size:12px; cursor:pointer; border:1px solid var(--border); color:var(--ink-muted); transition:all 0.15s; }
+.group-tab.active { background:var(--green-light); color:var(--green); border-color:var(--green-mid); font-weight:500; }
+.topbar-right { display:flex; gap:10px; }
+.btn { display:flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; font-size:12px; font-family:'DM Sans',sans-serif; font-weight:500; cursor:pointer; border:none; transition:all 0.15s; }
+.btn-ghost { background:transparent; color:var(--ink-muted); border:1px solid var(--border); }
+.btn-ghost:hover { background:var(--cream); color:var(--ink); }
+.btn-primary { background:var(--green); color:white; }
+.btn-primary:hover { background:#096B5E; }
+
+/* ── CONTENT ── */
+.content { padding:28px 32px; flex:1; }
+
+/* ── STAT STRIP ── */
+.stats-strip { display:flex; gap:16px; margin-bottom:24px; }
+.stat-card { background:var(--warm-white); border:1px solid var(--border); border-radius:12px; padding:16px 20px; flex:1; }
+.stat-label { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-muted); }
+.stat-value { font-family:'Playfair Display',serif; font-size:26px; color:var(--ink); line-height:1; margin-top:2px; }
+.stat-sub { font-size:11px; color:var(--ink-muted); margin-top:2px; }
+.stat-bar { margin-top:8px; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.stat-bar-fill { height:100%; border-radius:2px; }
+
+/* ── BANNERS ── */
+.banner { border-radius:10px; padding:10px 16px; display:flex; align-items:center; gap:10px; margin-bottom:24px; font-size:12px; }
+.banner-gold { background:var(--gold-light); border:1px solid #E8C87A; color:#92680A; }
+.banner-red  { background:var(--action-bg); border:1px solid var(--action-border); color:var(--action); }
+
+/* ── GRID HEADER ── */
+.grid-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.grid-title { font-family:'Playfair Display',serif; font-size:16px; }
+.grid-sub { font-size:12px; color:var(--ink-muted); margin-top:2px; }
+.legend { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--ink-muted); }
+.legend-dot { width:10px; height:10px; border-radius:50%; }
+
+/* ── SUNBURST GRID ── */
+.sunburst-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.sunburst-card { background:var(--warm-white); border:1px solid var(--border); border-radius:16px; padding:20px; display:flex; flex-direction:column; align-items:center; cursor:pointer; transition:box-shadow 0.2s,transform 0.2s,border-color 0.2s; position:relative; }
+.sunburst-card:hover { box-shadow:0 8px 32px rgba(10,126,110,0.12); transform:translateY(-2px); border-color:var(--green-mid); }
+.student-name-label { font-family:'Playfair Display',serif; font-size:15px; color:var(--ink); margin-top:12px; }
+.student-meta-label { font-size:10px; color:var(--ink-muted); margin-top:2px; text-align:center; }
+.caregiver-label { font-size:10px; color:var(--ink-muted); margin-top:3px; text-align:center; }
+.card-pill { position:absolute; top:12px; right:12px; font-size:9px; padding:3px 8px; border-radius:20px; font-weight:500; letter-spacing:0.04em; }
+.pill-complete { background:var(--green-light); color:var(--green); }
+.pill-progress { background:var(--gold-light); color:var(--gold); }
+.pill-start    { background:var(--border); color:var(--ink-muted); }
+.pill-action   { background:var(--action-bg); color:var(--action); }
+.pill-champion { background:var(--champion-bg); color:var(--champion); }
+.pill-ok       { background:var(--green-light); color:var(--green); }
+
+/* ── MODALS ── */
+.overlay { display:none; position:fixed; inset:0; background:rgba(28,25,23,0.55); z-index:300; align-items:center; justify-content:center; }
+.overlay.open { display:flex; }
+.modal-box { background:var(--warm-white); border-radius:20px; width:92%; max-width:860px; max-height:90vh; overflow-y:auto; animation:popIn 0.22s ease; }
+@keyframes popIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+.modal-header { display:flex; align-items:center; justify-content:space-between; padding:24px 28px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--warm-white); z-index:10; border-radius:20px 20px 0 0; }
+.modal-student { display:flex; align-items:center; gap:14px; }
+.modal-avatar { width:44px; height:44px; border-radius:50%; background:var(--green); color:white; font-size:18px; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; }
+.modal-name { font-family:'Playfair Display',serif; font-size:22px; }
+.modal-meta { font-size:11px; color:var(--ink-muted); margin-top:2px; }
+.modal-close { background:none; border:none; font-size:20px; color:var(--ink-muted); cursor:pointer; padding:4px 10px; border-radius:8px; }
+.modal-close:hover { background:var(--border); }
+.modal-body-two { padding:28px; display:grid; grid-template-columns:260px 1fr; gap:28px; }
+.modal-body-side { padding:28px; display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+
+/* ── LEARNING LOG DETAIL ── */
+.student-mosaic-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-bottom:20px; }
+.student-tile-block { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.student-tile-label { font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-muted); text-align:center; line-height:1.3; }
+.student-tile-big { width:56px; height:56px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; cursor:pointer; transition:transform 0.12s,box-shadow 0.12s; }
+.student-tile-big:hover { transform:scale(1.08); box-shadow:0 6px 20px rgba(0,0,0,0.12); }
+.tile-empty { background:#F5F2ED; color:#E7E2DA; border:1.5px dashed #E7E2DA; }
+.tile-l1 { background:#FEF2F1; color:#E8756A; border:1.5px solid #F4B5B0; }
+.tile-l2 { background:#FEF6E8; color:#F79009; border:1.5px solid #F9CFA0; }
+.tile-l3 { background:#FDF3E3; color:#C9963A; border:1.5px solid #E5C07A; }
+.tile-l4 { background:var(--green-light); color:var(--green); border:1.5px solid var(--green-mid); }
+.section-label { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:10px; }
+.outcomes-grid { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px; }
+.outcome-chip { display:flex; align-items:center; gap:5px; background:var(--cream); border:1px solid var(--border); border-radius:6px; padding:4px 9px; font-size:11px; color:var(--ink-light); }
+.outcome-chip.observed { background:var(--green-light); border-color:var(--green-mid); color:var(--green); }
+.outcome-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+.reflection-card { background:var(--cream); border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-bottom:8px; }
+.reflection-meta { display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap; }
+.reflection-stage { font-size:10px; background:var(--green-light); color:var(--green); padding:2px 8px; border-radius:4px; font-weight:500; }
+.reflection-date { font-size:10px; color:var(--ink-muted); }
+.reflection-score { font-size:10px; padding:2px 8px; border-radius:4px; font-weight:500; margin-left:auto; }
+.score-l1{background:#FEF2F1;color:#E8756A} .score-l2{background:#FEF6E8;color:#F79009}
+.score-l3{background:#FDF3E3;color:#C9963A} .score-l4{background:var(--green-light);color:var(--green)}
+.reflection-text { font-size:12px; color:var(--ink-light); line-height:1.6; }
+.reflection-count-badge { background:var(--green-light); color:var(--green); font-size:10px; padding:2px 8px; border-radius:20px; font-weight:500; margin-left:8px; }
+
+/* ── FAMILY ENGAGEMENT DETAIL ── */
+.wrap-list { display:flex; flex-direction:column; gap:8px; }
+.wrap-row { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--cream); border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:all 0.15s; }
+.wrap-row:hover { border-color:var(--green-mid); background:var(--green-light); }
+.wrap-row.selected { border-color:var(--green); background:var(--green-light); }
+.wrap-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.wrap-row-name { font-size:13px; color:var(--ink); flex:1; }
+.wrap-row-date { font-size:10px; color:var(--ink-muted); }
+.level-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:500; }
+.badge-champion{background:var(--champion-bg);color:var(--champion)}
+.badge-engaged{background:var(--green-light);color:var(--green)}
+.badge-present{background:var(--present-bg);color:var(--present)}
+.badge-passive{background:var(--passive-bg);color:var(--passive)}
+.badge-unseen{background:var(--unseen-bg);color:var(--unseen)}
+.badge-action{background:var(--action-bg);color:var(--action)}
+.seg-info { background:var(--cream); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; }
+.seg-info-title { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:8px; }
+.seg-info-value { font-family:'Playfair Display',serif; font-size:18px; color:var(--ink); }
+.seg-info-meta { font-size:11px; color:var(--ink-muted); margin-top:3px; }
+.int-label { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:8px; }
+.audio-bubble { background:#DCF8C6; border-radius:12px 2px 12px 12px; padding:9px 12px; display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.play-dot { width:28px; height:28px; border-radius:50%; background:#25D366; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.play-tri { width:0; height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; border-left:9px solid #fff; margin-left:2px; }
+.waveform { display:flex; align-items:center; gap:1.5px; height:16px; flex:1; }
+.waveform-bar { width:2px; border-radius:1px; background:#7faa7f; opacity:0.7; }
+.wa-bubble { background:#DCF8C6; border-radius:12px 2px 12px 12px; padding:10px 12px; font-size:13px; color:#1a1a1a; line-height:1.55; margin-bottom:6px; }
+.wa-time { font-size:10px; color:#7faa7f; text-align:right; margin-top:3px; }
+.montage-preview { background:linear-gradient(160deg,#1a3a2a 0%,#0d2818 40%,#0a1f14 100%); border-radius:12px; overflow:hidden; margin-bottom:12px; cursor:pointer; position:relative; }
+.montage-label { position:absolute; top:10px; left:10px; font-size:9px; color:rgba(255,255,255,0.45); letter-spacing:0.12em; text-transform:uppercase; }
+.montage-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+.montage-play { width:44px; height:44px; border-radius:50%; background:rgba(37,211,102,0.92); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 4px 20px rgba(37,211,102,0.4); }
+.montage-play-tri { width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:14px solid #fff; margin-left:2px; }
+.montage-title { font-size:13px; color:#fff; font-weight:600; }
+.montage-sub { font-size:10px; color:rgba(255,255,255,0.5); margin-top:2px; }
+.montage-dots { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:4px; }
+.montage-dot-el { width:6px; height:6px; border-radius:3px; background:rgba(255,255,255,0.3); }
+.montage-progress { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(255,255,255,0.15); }
+.montage-progress-fill { height:100%; background:#25D366; width:0%; }
+.divider { height:1px; background:var(--border); margin:16px 0; }
+.caption-card { background:#fff; border:1px solid var(--border); border-radius:10px; padding:12px 14px; font-size:12px; color:var(--ink-light); line-height:1.65; margin-bottom:12px; }
+.caption-attr { font-size:10px; color:var(--ink-muted); margin-top:6px; font-style:italic; }
+
+/* ── ADD DRAWER ── */
+.add-modal { display:none; position:fixed; inset:0; background:rgba(28,25,23,0.5); z-index:400; align-items:flex-end; justify-content:center; }
+.add-modal.open { display:flex; }
+.add-drawer { background:var(--warm-white); border-radius:20px 20px 0 0; padding:28px 32px 40px; width:100%; max-width:640px; animation:slideUp 0.25s ease; }
+@keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+.drawer-title { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.form-group { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+.form-label { font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-muted); }
+.form-input,.form-select,.form-textarea { font-family:'DM Sans',sans-serif; font-size:13px; color:var(--ink); background:var(--cream); border:1px solid var(--border); border-radius:8px; padding:9px 12px; outline:none; transition:border-color 0.15s; }
+.form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--green); }
+.form-textarea { resize:vertical; min-height:80px; }
+.drawer-actions { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+
+/* ── TOOLTIP ── */
+.tooltip-box { position:fixed; background:var(--ink); color:white; font-size:11px; padding:6px 10px; border-radius:8px; pointer-events:none; z-index:9999; white-space:nowrap; display:none; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── LEARNING LOG MODAL v2 ── */
+.lmodal-layout { display:grid; grid-template-columns:300px 1fr; gap:0; min-height:480px; }
+.lmodal-left { padding:28px 24px 28px 28px; border-right:1px solid var(--border); display:flex; flex-direction:column; gap:0; }
+.lmodal-right { padding:28px 28px 28px 24px; overflow-y:auto; max-height:560px; }
+
+/* outcome chips v2 */
+.outcome-chip { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--border); border-radius:8px; padding:5px 10px; font-size:11px; color:var(--ink-muted); background:var(--cream); cursor:pointer; transition:all 0.15s; }
+.outcome-chip.observed { background:var(--green-light); border-color:var(--green-mid); color:var(--green); }
+.outcome-chip.observed:hover { background:var(--green-mid); border-color:var(--green); }
+.outcome-chip.active-chip { background:var(--green); border-color:var(--green); color:white; }
+
+/* right panel states */
+.rp-breadcrumb { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-muted); margin-bottom:16px; flex-wrap:wrap; }
+.rp-breadcrumb span { cursor:pointer; }
+.rp-breadcrumb span:hover { color:var(--green); }
+.rp-breadcrumb .sep { opacity:0.4; cursor:default; }
+.rp-summary { font-size:13px; color:var(--ink-light); line-height:1.7; }
+.rp-summary-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--ink); margin-bottom:10px; }
+.rp-stage-badge { display:inline-flex; align-items:center; gap:5px; background:var(--green-light); color:var(--green); font-size:11px; padding:3px 10px; border-radius:20px; margin-bottom:12px; font-weight:500; }
+.rp-outcome-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--ink); margin-bottom:6px; }
+.rp-outcome-desc { font-size:13px; color:var(--ink-light); line-height:1.65; margin-bottom:16px; }
+
+/* evidence list */
+.evidence-group { margin-bottom:16px; }
+.evidence-group-title { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:8px; }
+.evidence-item { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:var(--cream); border:1px solid var(--border); border-radius:10px; margin-bottom:6px; }
+.evidence-item.clickable { cursor:pointer; transition:all 0.15s; }
+.evidence-item.clickable:hover { border-color:var(--green-mid); background:var(--green-light); }
+.evidence-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.ei-refl { background:#EFF6FF; color:#2563EB; }
+.ei-artifact { background:var(--gold-light); color:var(--gold); }
+.evidence-label { font-size:12px; color:var(--ink); font-weight:500; }
+.evidence-meta { font-size:11px; color:var(--ink-muted); margin-top:1px; }
+.evidence-arrow { margin-left:auto; font-size:14px; color:var(--ink-muted); align-self:center; }
+
+/* DIE reflection detail */
+.die-back { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--green); cursor:pointer; margin-bottom:16px; font-weight:500; }
+.die-back:hover { opacity:0.7; }
+.die-section { margin-bottom:16px; }
+.die-section-label { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:8px; font-weight:500; }
+.die-text { font-size:13px; color:var(--ink-light); line-height:1.7; }
+.die-eval-item { display:flex; gap:8px; padding:8px 10px; border-radius:8px; background:var(--cream); border:1px solid var(--border); margin-bottom:6px; font-size:12px; color:var(--ink-light); line-height:1.5; }
+.die-eval-code { font-weight:600; color:var(--green); flex-shrink:0; }
+
+/* artifact video card */
+.artifact-card { background:#1a3a2a; border-radius:12px; overflow:hidden; cursor:pointer; position:relative; height:130px; margin-bottom:8px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; }
+.artifact-play-btn { width:44px; height:44px; border-radius:50%; background:rgba(37,211,102,0.9); display:flex; align-items:center; justify-content:center; }
+.artifact-play-tri { width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:14px solid white; margin-left:3px; }
+.artifact-label { font-size:11px; color:rgba(255,255,255,0.6); letter-spacing:0.06em; }
+.artifact-label strong { color:white; display:block; font-size:13px; letter-spacing:0; margin-bottom:2px; }
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="wordmark">Collective</div>
+    <div class="tagline">Bilingual Learning Intelligence</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" id="nav-learning" onclick="showPage('learning')"><span class="nav-icon">◈</span> Learning Log</div>
+    <div class="nav-item" id="nav-family" onclick="showPage('family')"><span class="nav-icon">▷</span> Family Engagement</div>
+    <div class="nav-item" onclick=""><span class="nav-icon">⊞</span> Reports <span style="margin-left:auto;font-size:9px;opacity:0.4">🔒</span></div>
+    <div class="nav-section-label" style="margin-top:12px">Insights</div>
+    <div class="nav-item"><span class="nav-icon">◉</span> Monitoring</div>
+    <div class="nav-section-label" style="margin-top:12px">Setup</div>
+    <div class="nav-item"><span class="nav-icon">◎</span> Class Profile</div>
+    <div class="nav-item"><span class="nav-icon">⊡</span> Lesson Stages</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="teacher-chip">
+      <div class="teacher-avatar">D</div>
+      <div>
+        <div class="teacher-name">Diana</div>
+        <div class="teacher-role">Coordinator</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PAGE: LEARNING LOG                        -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="page active" id="page-learning">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="page-title">Learning Log</div>
+        <div class="class-badge">Juniors · G2</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost" onclick="openAddModal()">＋ Add Entry</button>
+        <button class="btn btn-ghost">⤓ Export</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="stats-strip">
+        <div class="stat-card">
+          <div class="stat-label">Documentation</div>
+          <div class="stat-value">72<span style="font-size:14px;color:var(--ink-muted)">%</span></div>
+          <div class="stat-sub">52 of 72 outcomes observed</div>
+          <div class="stat-bar"><div class="stat-bar-fill" style="width:72%;background:var(--green)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Reflections</div>
+          <div class="stat-value">6<span style="font-size:14px;color:var(--ink-muted)">/9</span></div>
+          <div class="stat-sub">Students with ≥3 reflections</div>
+          <div class="stat-bar"><div class="stat-bar-fill" style="width:67%;background:var(--gold)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg. Assessment</div>
+          <div class="stat-value">3.1</div>
+          <div class="stat-sub">Across all documented moments</div>
+          <div class="stat-bar"><div class="stat-bar-fill" style="width:77%;background:var(--green)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This Week</div>
+          <div class="stat-value">18</div>
+          <div class="stat-sub">Observations logged</div>
+          <div class="stat-bar"><div class="stat-bar-fill" style="width:85%;background:var(--green)"></div></div>
+        </div>
+      </div>
+      <div class="banner banner-gold">
+        <span>🔒</span>
+        <span><strong>Reports are locked.</strong> Document all learning outcomes and complete reflections for at least 3 activity types per student to unlock. 3 students remaining.</span>
+      </div>
+      <div class="grid-header">
+        <div>
+          <div class="grid-title">Class Mosaic</div>
+          <div class="grid-sub">Click a student to view their full profile and reflections.</div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#ccc"></div>Not yet</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#E8756A"></div>Beginning</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#F79009"></div>Emerging</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#C9963A"></div>Developing</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#0A7E6E"></div>Proficient</div>
+        </div>
+      </div>
+      <div class="sunburst-grid" id="learningGrid"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PAGE: FAMILY ENGAGEMENT                   -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="page" id="page-family">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="page-title">Family Engagement</div>
+        <div class="group-tabs">
+          <div class="group-tab active">Juniors · G2</div>
+          <div class="group-tab">Kids · G3</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost">⤓ Export</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="stats-strip">
+        <div class="stat-card">
+          <div class="stat-label">Wraps Sent</div>
+          <div class="stat-value">27</div>
+          <div class="stat-sub">Across 9 families · 3 weeks</div>
+          <div class="stat-bar"><div class="stat-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Open Rate</div>
+          <div class="stat-value">85<span style="font-size:14px;color:var(--ink-muted)">%</span></div>
+          <div class="stat-sub">23 of 27 messages opened</div>
+          <div class="stat-bar"><div class="stat-bar-fill" style="width:85%;background:var(--green)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Response Rate</div>
+          <div class="stat-value">63<span style="font-size:14px;color:var(--ink-muted)">%</span></div>
+          <div class="stat-sub">17 of 27 families responded</div>
+          <div class="stat-bar"><div class="stat-bar-fill" style="width:63%;background:var(--gold)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Champions</div>
+          <div class="stat-value">3</div>
+          <div class="stat-sub">Families who shared the quote</div>
+          <div class="stat-bar"><div class="stat-bar-fill" style="width:33%;background:var(--champion)"></div></div>
+        </div>
+      </div>
+      <div class="banner banner-red">
+        <span>🔴</span>
+        <span><strong>1 family needs attention.</strong> Yas's family responded with concerns this week. Review their message and follow up.</span>
+      </div>
+      <div class="grid-header">
+        <div>
+          <div class="grid-title">Family Engagement Log</div>
+          <div class="grid-sub">Click a family to view their full profile. Each ring segment = one weekly wrap sent.</div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--champion)"></div>Champion</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Engaged</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--present)"></div>Present</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--passive)"></div>Passive</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--unseen)"></div>Unseen</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--action)"></div>Needs attention</div>
+        </div>
+      </div>
+      <div class="sunburst-grid" id="familyGrid"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ── LEARNING LOG MODAL ── -->
+<div class="overlay" id="learningModal">
+  <div class="modal-box" style="max-width:900px">
+    <div class="modal-header">
+      <div class="modal-student">
+        <div class="modal-avatar" id="lModalAvatar"></div>
+        <div>
+          <div class="modal-name" id="lModalName"></div>
+          <div class="modal-meta" id="lModalMeta"></div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeLModal()">✕</button>
+    </div>
+    <div class="lmodal-layout">
+      <!-- LEFT: canvas + outcome chips -->
+      <div class="lmodal-left">
+        <canvas id="lModalCanvas" width="252" height="252" style="display:block;margin:0 auto 6px"></canvas>
+        <div style="font-size:10px;color:var(--ink-muted);text-align:center;margin-bottom:14px">Hover to explore · Click to view evidence</div>
+        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px">Learning Outcomes Observed</div>
+        <div class="outcomes-grid" id="lModalOutcomes"></div>
+      </div>
+      <!-- RIGHT: context-sensitive panel -->
+      <div class="lmodal-right" id="lModalRight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FAMILY ENGAGEMENT MODAL ── -->
+<div class="overlay" id="familyModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-student">
+        <div class="modal-avatar" id="fModalAvatar"></div>
+        <div>
+          <div class="modal-name" id="fModalName"></div>
+          <div class="modal-meta" id="fModalMeta"></div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeFModal()">✕</button>
+    </div>
+    <div class="modal-body-two">
+      <div>
+        <canvas id="fModalCanvas" width="240" height="240" style="display:block;margin:0 auto 16px"></canvas>
+        <div class="section-label">Weekly Wraps</div>
+        <div class="wrap-list" id="fWrapList"></div>
+      </div>
+      <div id="fWrapDetail">
+        <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--ink-muted);font-size:13px;padding:40px 0">
+          ← Select a wrap to view details
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD ENTRY MODAL ── -->
+<div class="add-modal" id="addModal">
+  <div class="add-drawer">
+    <div class="drawer-title">Add Observation <button class="modal-close" onclick="closeAddModal()">✕</button></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Student</label>
+        <select class="form-select"><option>Ele</option><option>Gab</option><option>Leo</option><option>Livs</option><option>Livv</option><option>Lor</option><option>Mar</option><option>Mig</option><option>Yas</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lesson Stage</label>
+        <select class="form-select"><option>Chat Time</option><option>Routines</option><option>Group Work</option><option>Writing</option><option>Reading</option><option>Speaking</option><option>Play Time</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date</label><input type="date" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Assessment (1–4)</label>
+        <select class="form-select"><option value="1">1 — Beginning</option><option value="2">2 — Emerging</option><option value="3" selected>3 — Developing</option><option value="4">4 — Proficient</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Evidence Reference</label>
+      <input type="text" class="form-input" placeholder="e.g. Leo – chat time – 0611">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Observation Note</label>
+      <textarea class="form-textarea" placeholder="Describe what you observed…"></textarea>
+    </div>
+    <div class="drawer-actions">
+      <button class="btn btn-ghost" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary">Save Observation</button>
+    </div>
+  </div>
+</div>
+
+<div class="tooltip-box" id="tooltip"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// SHARED DATA
+// ═══════════════════════════════════════════════
+
+const ACTIVITIES  = ['Chat Time','Routines','Group Work','Writing','Reading','Speaking','Play Time'];
+const ACT_SHORT   = ['CT','RO','GW','WR','RD','SP','PT'];
+const ALL_OUTCOMES= ['SP01','SP02','SP03','SP04','SP05','LI01','LI02','LI03','RD01','WR01','AT01','AT02','AT03','AT04'];
+
+const LEVELS = {
+  champion:{ name:'Champion',     color:'#7C3AED', colorA:(a)=>`rgba(124,58,237,${a})` },
+  engaged: { name:'Engaged',      color:'#0A7E6E', colorA:(a)=>`rgba(10,126,110,${a})`  },
+  present: { name:'Present',      color:'#2563EB', colorA:(a)=>`rgba(37,99,235,${a})`   },
+  passive: { name:'Passive',      color:'#C9963A', colorA:(a)=>`rgba(201,150,58,${a})`  },
+  unseen:  { name:'Unseen',       color:'#78716C', colorA:(a)=>`rgba(120,113,108,${a})` },
+  action:  { name:'Needs attention', color:'#DC2626', colorA:(a)=>`rgba(220,38,38,${a})` },
+};
+
+// ─── LEARNING LOG STUDENTS ───────────────────
+const students = [
+  { id:'Ele', years:4,
+    actScores:[3,3,null,3,null,null,null],
+    actOutcomes:[['SP01','LI03','AT01','AT03'],['SP03','LI02','LI03','AT02','AT04'],[],['WR01','AT01','AT03','AT04'],[],[],[]],
+    outcomes:['SP03','LI02','LI03','WR01','AT02','AT04'],
+    reflections:[
+      {stage:'Routines',date:'18 Nov 2025',score:3,text:'Ele followed instructions in English and answered routine questions. When asked why she was sad, she summarised her reason in English when prompted.'},
+      {stage:'Writing',date:'13 Nov 2025',score:3,text:'Ele wrote a short paragraph titled "My Favourite Season!". She followed the model text closely, using complete sentences and connectors.'},
+      {stage:'Routines',date:'18 Nov 2025',score:3,text:'She cooperated with the group by asking questions and recording answers, participating reliably though quietly.'}
+    ]},
+  { id:'Gab', years:4,
+    actScores:[4,4,null,3,null,null,null],
+    actOutcomes:[['SP01','SP02','SP05','LI03','AT01','AT03'],['SP03','LI02','LI03','AT02','AT04'],[],['WR01','AT01','AT02'],[],[],[]],
+    outcomes:['SP01','SP02','SP03','SP05','LI02','LI03','WR01','AT01','AT02','AT03','AT04'],
+    reflections:[
+      {stage:'Chat Time',date:'18 Nov 2025',score:3.7,text:'Gab answered all questions in English using both rehearsed and spontaneous language. Very engaged and participative.'},
+      {stage:'Routines',date:'18 Nov 2025',score:4,text:'Gab shows strong automaticity with familiar routine language and clear listening comprehension.'},
+      {stage:'Writing',date:'13 Nov 2025',score:3,text:'Gab wrote a personalized version of the model text with minimal support.'}
+    ]},
+  { id:'Leo', years:1,
+    actScores:[3,4,null,3,null,null,null],
+    actOutcomes:[['SP01','SP02','SP05','LI03','AT01','AT03'],['SP03','LI02','LI03','AT02','AT04'],[],['WR01','AT01'],[],[],[]],
+    outcomes:['SP01','SP02','SP03','SP05','LI02','LI03','WR01','AT01','AT02','AT03','AT04'],
+    reflections:[
+      {stage:'Chat Time',date:'06 Nov 2025',score:3,text:'Leo answered most questions in English and added some information in Portuguese. Very engaged during Chat Time.'},
+      {stage:'Routines',date:'16 Nov 2025',score:4,text:'Leo shows confidence when using familiar English sentences during the routine.'},
+      {stage:'Writing',date:'13 Nov 2025',score:3,text:'Leo showed understanding of the model text and produced a similar version with guidance.'}
+    ]},
+  { id:'Livs', years:1,
+    actScores:[2,2,null,3,null,null,null],
+    actOutcomes:[['SP01','SP02','LI03','AT01','AT03'],['SP03','LI02','LI03','AT02','AT04'],[],['WR01','AT01','AT03'],[],[],[]],
+    outcomes:['SP01','SP02','SP03','SP05','LI02','LI03','WR01','AT01','AT02','AT03','AT04'],
+    reflections:[
+      {stage:'Chat Time',date:'13 Nov 2025',score:2,text:'Livs demonstrates good comprehension but does not yet feel confident interacting independently in English.'},
+      {stage:'Routines',date:'16 Nov 2025',score:2,text:'Livs is comfortable with rehearsed phrases but relies on gestures or a quiet voice when unsure.'},
+      {stage:'Writing',date:'13 Nov 2025',score:3,text:'Livs understood the model text and expressed her own ideas with partial independence.'}
+    ]},
+  { id:'Livv', years:3,
+    actScores:[3,4,null,null,null,null,null],
+    actOutcomes:[['SP01','SP02','SP05','LI03','AT01','AT03'],['SP03','LI02','LI03','AT02','AT04'],[],[],[],[],[]],
+    outcomes:['SP01','SP02','SP03','SP05','LI02','LI03','AT01','AT02','AT03','AT04'],
+    reflections:[
+      {stage:'Routines',date:'06 Nov 2025',score:4,text:'Livv shows strong comfort with familiar classroom English. She leads routine stages and asks required questions confidently.'},
+      {stage:'Chat Time',date:'06 Nov 2025',score:3,text:'Livv shows good comprehension and participates using the English she has learned.'}
+    ]},
+  { id:'Lor', years:3,
+    actScores:[3,4,null,4,null,null,null],
+    actOutcomes:[['SP01','SP02','SP05','LI03','AT01','AT03'],['SP03','LI02','LI03','AT02','AT04'],[],['WR01','AT01','AT03','AT04'],[],[],[]],
+    outcomes:['SP01','SP02','SP03','SP05','LI02','LI03','WR01','AT01','AT02','AT03','AT04'],
+    reflections:[
+      {stage:'Writing',date:'16 Oct 2025',score:4,text:'Lor wrote a short paragraph titled "My Favourite Season!!!". He followed the guided model closely and produced complete sentences.'},
+      {stage:'Chat Time',date:'13 Nov 2025',score:3,text:'Lor shows strong comprehension and participates actively using the rehearsed English he has learned.'},
+      {stage:'Routines',date:'16 Nov 2025',score:4,text:'Lor shows confidence when using familiar English sentences during the routine.'}
+    ]},
+  { id:'Mar', years:0.5,
+    actScores:[3,3,null,2,null,null,null],
+    actOutcomes:[['SP03','LI03','AT02','AT03'],['SP03','LI02','LI03','AT02','AT04'],[],['WR01','AT02'],[],[],[]],
+    outcomes:['SP03','LI02','LI03','WR01','AT02','AT04'],
+    reflections:[
+      {stage:'Routines',date:'13 Nov 2025',score:3,text:'Mar shows willingness to use familiar English during the routine. Volunteering for a leadership role shows comfort within predictable classroom structures.'},
+      {stage:'Writing',date:'13 Nov 2025',score:2,text:'Mar wrote a short paragraph with substantial teacher support and a few personal ideas included.'}
+    ]},
+  { id:'Mig', years:4,
+    actScores:[4,4,null,4,null,null,null],
+    actOutcomes:[['SP01','SP02','SP05','LI03','AT01','AT03'],['SP03','LI02','LI03','AT02','AT04'],[],['WR01','AT01','AT02','AT04'],[],[],[]],
+    outcomes:['SP01','SP02','SP03','SP05','LI02','LI03','WR01','AT01','AT02','AT03','AT04'],
+    reflections:[
+      {stage:'Writing',date:'16 Oct 2025',score:4,text:'Mig wrote a short paragraph titled "I Am a Community Helper". He followed the model text accurately and added personal touches.'},
+      {stage:'Chat Time',date:'06 Nov 2025',score:4,text:'Mig shows strong comprehension and growing expressive ability in conversational contexts.'},
+      {stage:'Routines',date:'18 Nov 2025',score:4,text:'Mig shows strong comfort with familiar classroom English and asks routine questions confidently.'}
+    ]},
+  { id:'Yas', years:0.5,
+    actScores:[1,1,null,2,null,null,null],
+    actOutcomes:[['SP01','SP02','LI03','AT01'],['SP03','LI02','LI03','AT02'],[],['WR01','AT02'],[],[],[]],
+    outcomes:['SP01','SP02','SP03','SP05','LI02','LI03','WR01','AT01','AT02','AT03','AT04'],
+    reflections:[
+      {stage:'Routines',date:'06 Nov 2025',score:1,text:'Yas appears more comfortable observing the routine than initiating verbal participation.'},
+      {stage:'Chat Time',date:'13 Nov 2025',score:1,text:'Yas shows significant difficulty understanding conversational English, even with familiar rehearsed patterns.'},
+      {stage:'Writing',date:'13 Nov 2025',score:2,text:'Yas wrote a short paragraph with significant teacher support.'}
+    ]}
+];
+
+// ─── FAMILY ENGAGEMENT DATA ──────────────────
+const families = [
+  { id:'Ele', caregiver:'Helena & Marco',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:true,openedAt:'Fri 11 Apr, 19:14',openCount:2,level:'engaged',interaction:{type:'audio',duration:18,shared:false},caption:'Esta semana focamos em ampliar o vocabulário dentro do nosso tema e usar as palavras em frases simples. A Ele já consegue reconhecer e falar as novas palavras com mais segurança, especialmente durante as atividades em grupo.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Sat 19 Apr, 09:32',openCount:1,level:'present',interaction:{type:'emoji',emoji:'❤️'},caption:'A Ele mostrou grande progresso na expressão oral esta semana.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:true,openedAt:'Fri 25 Apr, 20:01',openCount:1,level:'champion',interaction:{type:'audio',duration:22,shared:true},caption:'Foi uma semana de grandes conquistas! A Ele liderou a rotina matinal em inglês.'},
+    ]},
+  { id:'Gab', caregiver:'Fernanda',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:true,openedAt:'Fri 11 Apr, 18:55',openCount:3,level:'champion',interaction:{type:'audio',duration:25,shared:true},caption:'Esta semana focamos em ampliar o vocabulário. O Gab demonstra excelente engajamento.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Fri 18 Apr, 21:10',openCount:2,level:'engaged',interaction:{type:'text',text:'Ele adorou! Em casa ele já tenta falar em inglês com a gente. Muito obrigada pelo vídeo ❤️'},caption:'O Gab está mostrando confiança crescente nas interações em inglês.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:true,openedAt:'Sun 27 Apr, 11:20',openCount:1,level:'engaged',interaction:{type:'audio',duration:15,shared:false},caption:'Semana produtiva com foco em conversação e expressão oral.'},
+    ]},
+  { id:'Leo', caregiver:'Patrícia & João',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:true,openedAt:'Sat 12 Apr, 10:44',openCount:1,level:'passive',interaction:null,caption:'Leo está progredindo bem nas rotinas diárias em inglês.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Fri 18 Apr, 19:30',openCount:2,level:'present',interaction:{type:'emoji',emoji:'🌟'},caption:'Leo mostrou grande confiança durante o Chat Time esta semana.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:false,openedAt:null,openCount:0,level:'unseen',interaction:null,caption:'Resumo semanal do grupo G2.'},
+    ]},
+  { id:'Livs', caregiver:'Camila',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:true,openedAt:'Fri 11 Apr, 22:05',openCount:1,level:'present',interaction:{type:'emoji',emoji:'😍'},caption:'Livs está desenvolvendo sua compreensão auditiva com ótimos resultados.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Sat 19 Apr, 08:15',openCount:2,level:'engaged',interaction:{type:'text',text:'Nossa que incrível! Não sabia que ela estava tão bem no inglês. Vou reforçar mais em casa!'},caption:'Livs demonstra progresso consistente na expressão oral.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:true,openedAt:'Fri 25 Apr, 18:50',openCount:1,level:'passive',interaction:null,caption:'Semana de trabalho em grupo com foco em colaboração.'},
+    ]},
+  { id:'Livv', caregiver:'André & Sofia',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:true,openedAt:'Fri 11 Apr, 20:30',openCount:2,level:'champion',interaction:{type:'audio',duration:20,shared:true},caption:'Livv liderou a rotina matinal em inglês com grande confiança esta semana.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Sat 19 Apr, 14:00',openCount:1,level:'engaged',interaction:{type:'audio',duration:12,shared:false},caption:'Excelente semana para Livv nas atividades de Chat Time.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:true,openedAt:'Fri 25 Apr, 21:15',openCount:1,level:'engaged',interaction:{type:'emoji',emoji:'💚'},caption:'Semana de conquistas para toda a turma G2.'},
+    ]},
+  { id:'Lor', caregiver:'Beatriz',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:false,openedAt:null,openCount:0,level:'unseen',interaction:null,caption:'Resumo semanal do grupo G2.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Mon 21 Apr, 07:10',openCount:1,level:'passive',interaction:null,caption:'Lor mostrou grande progresso na escrita esta semana.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:true,openedAt:'Fri 25 Apr, 19:44',openCount:1,level:'present',interaction:{type:'emoji',emoji:'👏'},caption:'Semana de trabalho em grupo produtiva.'},
+    ]},
+  { id:'Mar', caregiver:'Renata & Paulo',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:true,openedAt:'Sat 12 Apr, 09:00',openCount:1,level:'present',interaction:{type:'emoji',emoji:'🥰'},caption:'Mar está desenvolvendo bem suas habilidades de expressão oral.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Fri 18 Apr, 20:45',openCount:2,level:'engaged',interaction:{type:'audio',duration:16,shared:false},caption:'Mar participou com entusiasmo das atividades de rotina esta semana.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:true,openedAt:'Sat 26 Apr, 10:30',openCount:1,level:'passive',interaction:null,caption:'Resumo da semana com foco em colaboração.'},
+    ]},
+  { id:'Mig', caregiver:'Daniela & Roberto',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:true,openedAt:'Fri 11 Apr, 18:40',openCount:4,level:'champion',interaction:{type:'audio',duration:30,shared:true},caption:'Mig teve uma semana excepcional, demonstrando proficiência em todas as atividades.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Fri 18 Apr, 19:00',openCount:2,level:'engaged',interaction:{type:'text',text:'Ele foi até a escola mais feliz esse dia! Falou que foi o melhor dia do ano. Obrigada de coração ❤️'},caption:'Mig liderou o grupo com confiança nas atividades de Chat Time.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:true,openedAt:'Fri 25 Apr, 20:20',openCount:1,level:'champion',interaction:{type:'audio',duration:18,shared:true},caption:'Mais uma semana de excelência para Mig.'},
+    ]},
+  { id:'Yas', caregiver:'Luciana',
+    wraps:[
+      {id:'W1',label:'Wrap 1 — Group',date:'11 Apr',opened:true,openedAt:'Sun 13 Apr, 16:20',openCount:1,level:'passive',interaction:null,caption:'Yas está no início da sua jornada em inglês e progredindo no seu próprio ritmo.'},
+      {id:'W2',label:'Wrap 2 — Individual',date:'18 Apr',opened:true,openedAt:'Fri 18 Apr, 23:10',openCount:1,level:'passive',interaction:null,caption:'Yas está começando a se sentir mais confortável nas rotinas.'},
+      {id:'W3',label:'Wrap 3 — Group',date:'25 Apr',opened:true,openedAt:'Fri 25 Apr, 22:45',openCount:2,level:'action',interaction:{type:'text',text:'Estou preocupada. A Yas chegou em casa chorando dizendo que não entende nada. Preciso conversar com vocês.'},caption:'Resumo semanal do grupo G2.'},
+    ]},
+];
+
+// ═══════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item[id^="nav-"]').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+// SHARED CANVAS HELPERS
+// ═══════════════════════════════════════════════
+
+function scoreColor(score, alpha) {
+  alpha = alpha||1;
+  if (!score) return `rgba(220,215,208,${alpha})`;
+  if (score<1.5) return `rgba(232,117,106,${alpha})`;
+  if (score<2.5) return `rgba(247,144,9,${alpha})`;
+  if (score<3.5) return `rgba(201,150,58,${alpha})`;
+  return `rgba(10,126,110,${alpha})`;
+}
+
+function levelLabel(score) {
+  if (!score) return 'Not yet documented';
+  if (score<1.5) return 'Beginning';
+  if (score<2.5) return 'Emerging';
+  if (score<3.5) return 'Developing';
+  return 'Proficient';
+}
+
+function scoreClass(score) {
+  if (!score) return '';
+  if (score<1.5) return 'score-l1';
+  if (score<2.5) return 'score-l2';
+  if (score<3.5) return 'score-l3';
+  return 'score-l4';
+}
+
+function hitTest(canvas, mx, my) {
+  const cx=canvas._cx, cy=canvas._cy;
+  const dx=mx-cx, dy=my-cy;
+  const r=Math.sqrt(dx*dx+dy*dy);
+  let angle=Math.atan2(dy,dx);
+  const segs=canvas._segments||[];
+  for (let i=segs.length-1;i>=0;i--) {
+    const s=segs[i];
+    if (r<s.r1||r>s.r2) continue;
+    let a=angle;
+    while(a<s.startA-0.01) a+=2*Math.PI;
+    while(a>s.startA+2*Math.PI-0.01) a-=2*Math.PI;
+    if (a>=s.startA&&a<=s.endA) return s;
+  }
+  return null;
+}
+
+const tip = document.getElementById('tooltip');
+function showTip(e, text) { tip.textContent=text; tip.style.display='block'; tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-8)+'px'; }
+function hideTip() { tip.style.display='none'; }
+
+// ═══════════════════════════════════════════════
+// LEARNING LOG SUNBURST
+// ═══════════════════════════════════════════════
+
+function drawLearningSunburst(canvas, student) {
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2;
+  const n=ACTIVITIES.length, segAngle=(2*Math.PI)/n, gap=0.06;
+  const holeR=W*0.13, inner=W*0.30, outer=W*0.46;
+  ctx.clearRect(0,0,W,H);
+  ctx.beginPath(); ctx.arc(cx,cy,holeR,0,2*Math.PI); ctx.fillStyle='#FAF7F2'; ctx.fill();
+  canvas._segments=[]; canvas._cx=cx; canvas._cy=cy;
+
+  for (let i=0;i<n;i++) {
+    const sA=-Math.PI/2+i*segAngle+gap/2, eA=sA+segAngle-gap;
+    const score=student.actScores[i];
+    const outs=student.actOutcomes[i];
+
+    // Inner ring
+    ctx.beginPath(); ctx.moveTo(cx+holeR*Math.cos(sA),cy+holeR*Math.sin(sA));
+    ctx.arc(cx,cy,inner,sA,eA); ctx.arc(cx,cy,holeR,eA,sA,true); ctx.closePath();
+    ctx.fillStyle=scoreColor(score,0.9); ctx.fill();
+    ctx.strokeStyle='#FAF7F2'; ctx.lineWidth=1.5; ctx.stroke();
+    canvas._segments.push({type:'activity',idx:i,r1:holeR,r2:inner,startA:sA,endA:eA});
+
+    // Outer ring
+    if (outs&&outs.length>0) {
+      const oSeg=(segAngle-gap)/outs.length;
+      outs.forEach((code,j)=>{
+        const os=sA+j*oSeg, oe=os+oSeg-0.01;
+        ctx.beginPath(); ctx.moveTo(cx+inner*Math.cos(os),cy+inner*Math.sin(os));
+        ctx.arc(cx,cy,outer,os,oe); ctx.arc(cx,cy,inner,oe,os,true); ctx.closePath();
+        ctx.fillStyle=scoreColor(score,0.6); ctx.fill();
+        ctx.strokeStyle='#FAF7F2'; ctx.lineWidth=1.5; ctx.stroke();
+        canvas._segments.push({type:'outcome',actIdx:i,code,r1:inner,r2:outer,startA:os,endA:oe});
+      });
+    } else {
+      ctx.beginPath(); ctx.moveTo(cx+inner*Math.cos(sA),cy+inner*Math.sin(sA));
+      ctx.arc(cx,cy,outer,sA,eA); ctx.arc(cx,cy,inner,eA,sA,true); ctx.closePath();
+      ctx.fillStyle='rgba(220,215,208,0.25)'; ctx.fill();
+      ctx.strokeStyle='#FAF7F2'; ctx.lineWidth=1.5; ctx.stroke();
+    }
+
+    // Label
+    const lr=(holeR+inner)/2, mA=(sA+eA)/2;
+    ctx.save(); ctx.translate(cx+lr*Math.cos(mA),cy+lr*Math.sin(mA)); ctx.rotate(mA+Math.PI/2);
+    ctx.font=`500 ${W*0.048}px DM Sans`; ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.textAlign='center';
+    ctx.fillText(ACT_SHORT[i],0,4); ctx.restore();
+  }
+}
+
+function lCompletion(s) {
+  const docs=s.actScores.filter(x=>x!==null).length;
+  const refs=s.reflections.length;
+  if (docs===ACTIVITIES.length&&refs>=3) return ['pill-complete','✓ Complete'];
+  if (refs>=3) return ['pill-progress',`${refs}/3 reflections`];
+  return ['pill-start',`${refs}/3 reflections`];
+}
+
+function buildLearningGrid() {
+  const grid=document.getElementById('learningGrid'); grid.innerHTML='';
+  students.forEach(s=>{
+    const [pc,pt]=lCompletion(s);
+    const card=document.createElement('div'); card.className='sunburst-card';
+    card.innerHTML=`<div class="card-pill ${pc}">${pt}</div><canvas width="160" height="160" id="lc_${s.id}"></canvas><div class="student-name-label">${s.id}</div><div class="student-meta-label">${s.years<1?'< 1 yr':s.years+' yr'} English</div>`;
+    card.onclick=()=>openLModal(s.id);
+    grid.appendChild(card);
+    requestAnimationFrame(()=>{ const c=document.getElementById('lc_'+s.id); drawLearningSunburst(c,s); });
+  });
+}
+
+// ─── LEARNING LOG MODAL ─────────────────────
+
+// ── Rich data for Ele only (demo depth) ──────────────────────────────────
+
+const ELE_DATA = {
+  summary: `Ele is making steady progress across all areas, with her strongest performance in familiar structured tasks — routines, writing, and group activities where the expectations are clear. She participates meaningfully when prompted, producing short English sentences and showing good comprehension of teacher instructions. Her main developmental edge is sustaining attention and initiating language independently, particularly in Chat Time where engagement is strong at the start but tends to drop as the activity continues. At this stage Ele is performing at Level 3 (Developing) across most documented outcomes, which is the expected level for a student with 4 years of English in this programme.`,
+
+  actSummaries: {
+    'Chat Time': {
+      summary: `Ele is able to participate and express her ideas in English when she is engaged and prompted, showing developing comprehension and speaking skills. The evidence so far suggests that her attention and active participation tend to fade as the activity continues: she becomes quieter and more passive, sometimes switching to Portuguese with peers. At this stage, she is able to contribute meaningfully when prompted, but still needs support to sustain listening and to initiate her own questions and comments.`,
+      evidence: [
+        { type:'reflection', id:'R1', label:'Reflection 1', date:'06/11/2025', interactive:false },
+        { type:'artifact',   id:'A1', label:'Artifact 1',   ref:'ele – chat time – 0611', interactive:false },
+        { type:'reflection', id:'R2', label:'Reflection 2', date:'14/11/2025', interactive:false },
+        { type:'artifact',   id:'A2', label:'Artifact 2',   ref:'ele – chat time – 1411', interactive:false },
+      ]
+    },
+    'Routines': {
+      summary: `Ele follows routine sequences confidently in English, showing strong listening comprehension and consistent participation. She volunteers for leadership roles and cooperates reliably with peers during group routines.`,
+      evidence: [
+        { type:'reflection', id:'R3', label:'Reflection 3', date:'18/11/2025', interactive:false },
+        { type:'artifact',   id:'A3', label:'Artifact 3',   ref:'ele – routines – 1811', interactive:false },
+      ]
+    },
+    'Writing': {
+      summary: `Ele follows model texts closely and produces complete sentences with connectors. Her writing shows developing control of familiar structures with good use of sequencing language.`,
+      evidence: [
+        { type:'reflection', id:'R4', label:'Reflection 4', date:'13/11/2025', interactive:false },
+      ]
+    },
+  },
+
+  outcomeSummaries: {
+    'SP01': {
+      code: 'SP01',
+      title: 'Express ideas in contexts appropriate for their age and proficiency',
+      desc: 'For these 9-year-old Juniors (1–4 years of English, 2×/week), this means the student can talk about familiar topics using simple sentences, be mostly understood in English even with mistakes, and adjust what they say to the activity — e.g. answering questions in Chat Time, describing routines in Speaking activities, and expressing needs in Play Time. Level 3 – Developing is the expected, on-track performance for most learners in this context.',
+      tagCount: 3,
+      evidence: [
+        { type:'reflection', id:'R1', label:'Reflection 1', date:'06/11/2025', interactive:false },
+        { type:'artifact',   id:'A1', label:'Artifact 1',   ref:'Livv – chat time – 0611', interactive:false },
+        { type:'reflection', id:'R4', label:'Reflection 4', date:'20/11/2025', interactive:true },
+        { type:'artifact',   id:'A4', label:'Artifact 4',   ref:'Livv – speaking activity – 2011', interactive:true, isVideo:true },
+        { type:'reflection', id:'R7', label:'Reflection 7', date:'04/12/2025', interactive:false },
+        { type:'artifact',   id:'A7', label:'Artifact 7',   ref:'Livv – play time – 0412', interactive:false },
+      ]
+    },
+    'SP02': {
+      code: 'SP02', title: 'Participate in simple group and pair dialogues in English',
+      desc: 'The student can take turns, ask and answer simple questions, and maintain a short exchange in English with a partner or small group, with some support from prompts or sentence frames.',
+      tagCount: 2,
+      evidence: [
+        { type:'reflection', id:'R1', label:'Reflection 1', date:'06/11/2025', interactive:false },
+        { type:'artifact',   id:'A1', label:'Artifact 1',   ref:'ele – chat time – 0611', interactive:false },
+        { type:'reflection', id:'R4', label:'Reflection 4', date:'20/11/2025', interactive:false },
+        { type:'artifact',   id:'A4', label:'Artifact 4',   ref:'ele – speaking activity – 2011', interactive:false },
+      ]
+    },
+    'SP03': {
+      code: 'SP03', title: 'Use familiar English in daily classroom routines',
+      desc: 'The student can participate in and lead routine sequences — date, weather, agenda — using the English phrases taught, responding to questions and contributing to the group ritual with confidence.',
+      tagCount: 3,
+      evidence: [
+        { type:'reflection', id:'R3', label:'Reflection 3', date:'18/11/2025', interactive:false },
+        { type:'artifact',   id:'A3', label:'Artifact 3',   ref:'ele – routines – 1811', interactive:false },
+        { type:'reflection', id:'R5', label:'Reflection 5', date:'25/11/2025', interactive:false },
+      ]
+    },
+  },
+
+  reflection4: {
+    id: 'R4', date: '20/11/2025', stage: 'Speaking Activity', student: 'Livv',
+    describe: `During a speaking activity, students worked in pairs to talk about their daily routines using picture cards and prompts on the board. Pairs took turns asking and answering questions like "What time do you…?" and "What do you do after…?" When it was her turn, Livv looked at her partner, asked the questions on her card in English, and listened to the answers. She then gave her own, such as "I wake up at seven" and "I do homework and then I play," sometimes adding extra information like "I play with my brother." She stayed focused on her partner and the task, briefly checking a word in Portuguese with me or her partner when needed, then returning to English. She completed her turns, asked all of the questions on her card, and participated until the end of the activity.`,
+    interpret: `This suggests that Livv can use simple questions and answers in English to complete a structured speaking task with a peer. She is not only responding to prompts but also using them to initiate questions and keep the interaction going. Her short, clear sentences and occasional extra details show growing confidence in expressing her ideas in English during planned speaking activities. The quick switches to Portuguese seem mainly to clarify meaning, after which she returns to English, indicating that English is becoming more usable for her in peer interactions when there is clear support and structure. Her sustained focus and turn-taking point to progress in maintaining engagement and participation from beginning to end.`,
+    evaluate: [
+      { code:'SP01', level:'3 – Developing', reason:'she expressed her ideas in English using short, meaningful sentences and sometimes added extra details, showing developing ability to talk about her routine in a familiar, supported context.' },
+      { code:'SP02', level:'3 – Developing', reason:'she both asked and answered questions with her partner in English, taking turns and keeping the pair interaction going, even though she still relied on the prompts and occasional clarification in Portuguese.' },
+      { code:'AT01', level:'4 – Consolidating', reason:'she stayed focused on the task, followed the sequence of questions, and remained actively engaged with her partner for the entire duration of the activity without disengaging.' },
+    ]
+  }
+};
+
+// Tag counts per outcome per student (for shading) — only Ele has detailed counts
+const ELE_TAG_COUNTS = {
+  'SP01':3,'SP02':2,'SP03':3,'SP04':1,'SP05':1,
+  'LI01':1,'LI02':2,'LI03':2,'RD01':1,'WR01':2,
+  'AT01':3,'AT02':3,'AT03':2,'AT04':2
+};
+
+// ── OUTCOME METADATA ────────────────────────────────────────────────────────
+const OUTCOME_META = {
+  'SP01':{ title:'Express ideas in contexts appropriate for their age and proficiency' },
+  'SP02':{ title:'Participate in simple group and pair dialogues in English' },
+  'SP03':{ title:'Use familiar English in daily classroom routines' },
+  'SP04':{ title:'Produce simple connected speech with sequencing language' },
+  'SP05':{ title:'Ask spontaneous questions to seek information or clarification' },
+  'LI01':{ title:'Follow simple classroom instructions in English' },
+  'LI02':{ title:'Understand familiar spoken language in routine and structured contexts' },
+  'LI03':{ title:'Demonstrate listening comprehension through action or response' },
+  'RD01':{ title:'Read and understand short familiar texts with support' },
+  'WR01':{ title:'Produce short written texts using familiar structures and vocabulary' },
+  'AT01':{ title:'Sustain attention and active participation across an activity' },
+  'AT02':{ title:'Cooperate with peers in pair and group tasks' },
+  'AT03':{ title:'Show curiosity and motivation when engaging with English' },
+  'AT04':{ title:'Take initiative and volunteer in classroom interactions' },
+};
+
+// ── SUNBURST WITH SHADING ────────────────────────────────────────────────────
+function drawLearningSunburst(canvas, student) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2;
+  const n = ACTIVITIES.length, segAngle = (2*Math.PI)/n, gap = 0.06;
+  const holeR = W*0.13, inner = W*0.30, outer = W*0.46;
+  ctx.clearRect(0,0,W,H);
+  ctx.beginPath(); ctx.arc(cx,cy,holeR,0,2*Math.PI); ctx.fillStyle='#FAF7F2'; ctx.fill();
+  canvas._segments = []; canvas._cx = cx; canvas._cy = cy;
+
+  // Tag counts for shading (Ele-only; others use flat)
+  const tagCounts = (student.id === 'Ele') ? ELE_TAG_COUNTS : null;
+
+  for (let i = 0; i < n; i++) {
+    const sA = -Math.PI/2 + i*segAngle + gap/2, eA = sA + segAngle - gap;
+    const score = student.actScores[i];
+    const outs = student.actOutcomes[i];
+
+    // Inner ring (activity level — solid colour)
+    ctx.beginPath(); ctx.moveTo(cx+holeR*Math.cos(sA), cy+holeR*Math.sin(sA));
+    ctx.arc(cx,cy,inner,sA,eA); ctx.arc(cx,cy,holeR,eA,sA,true); ctx.closePath();
+    ctx.fillStyle = scoreColor(score, 0.9); ctx.fill();
+    ctx.strokeStyle = '#FAF7F2'; ctx.lineWidth = 1.5; ctx.stroke();
+    canvas._segments.push({type:'activity', idx:i, r1:holeR, r2:inner, startA:sA, endA:eA});
+
+    // Outer ring (outcomes — shaded by tag count)
+    if (outs && outs.length > 0) {
+      const maxCount = tagCounts ? Math.max(...outs.map(c => tagCounts[c]||1)) : 1;
+      const oSeg = (segAngle - gap) / outs.length;
+      outs.forEach((code, j) => {
+        const os = sA + j*oSeg, oe = os + oSeg - 0.01;
+        const count = tagCounts ? (tagCounts[code]||1) : 1;
+        // shade: 0.25 (light, count=1) to 0.75 (dark, max count) — relative to max in this segment
+        const shade = tagCounts ? (0.25 + 0.5*(count/maxCount)) : 0.6;
+        ctx.beginPath(); ctx.moveTo(cx+inner*Math.cos(os), cy+inner*Math.sin(os));
+        ctx.arc(cx,cy,outer,os,oe); ctx.arc(cx,cy,inner,oe,os,true); ctx.closePath();
+        ctx.fillStyle = scoreColor(score, shade); ctx.fill();
+        ctx.strokeStyle = '#FAF7F2'; ctx.lineWidth = 1.5; ctx.stroke();
+        canvas._segments.push({type:'outcome', actIdx:i, code, count, r1:inner, r2:outer, startA:os, endA:oe});
+      });
+    } else {
+      ctx.beginPath(); ctx.moveTo(cx+inner*Math.cos(sA), cy+inner*Math.sin(sA));
+      ctx.arc(cx,cy,outer,sA,eA); ctx.arc(cx,cy,inner,eA,sA,true); ctx.closePath();
+      ctx.fillStyle = 'rgba(220,215,208,0.25)'; ctx.fill();
+      ctx.strokeStyle = '#FAF7F2'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
+    // Activity label
+    const lr = (holeR+inner)/2, mA = (sA+eA)/2;
+    ctx.save(); ctx.translate(cx+lr*Math.cos(mA), cy+lr*Math.sin(mA)); ctx.rotate(mA+Math.PI/2);
+    ctx.font = `500 ${W*0.048}px DM Sans`; ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.textAlign = 'center';
+    ctx.fillText(ACT_SHORT[i], 0, 4); ctx.restore();
+  }
+}
+
+// ── MODAL STATE ──────────────────────────────────────────────────────────────
+let lModalStudent = null;
+let lActiveChip = null;
+
+function openLModal(id) {
+  lModalStudent = students.find(s => s.id === id);
+  if (!lModalStudent) return;
+  const s = lModalStudent;
+  lActiveChip = null;
+
+  document.getElementById('lModalAvatar').textContent = s.id[0];
+  document.getElementById('lModalName').textContent = s.id;
+  document.getElementById('lModalMeta').textContent = (s.years<1?'Less than 1 year':s.years+(s.years===1?' year':' years'))+' of English · Juniors G2';
+
+  const mc = document.getElementById('lModalCanvas');
+  drawLearningSunburst(mc, s);
+
+  mc.onmousemove = function(e) {
+    const rect = mc.getBoundingClientRect();
+    const mx = (e.clientX-rect.left)*(mc.width/rect.width), my = (e.clientY-rect.top)*(mc.height/rect.height);
+    const hit = hitTest(mc, mx, my);
+    if (hit) {
+      if (hit.type==='activity') showTip(e, `${ACTIVITIES[hit.idx]}: ${levelLabel(s.actScores[hit.idx])}`);
+      else showTip(e, `${hit.code} × ${hit.count||1}`);
+    } else hideTip();
+  };
+  mc.onmouseleave = hideTip;
+
+  mc.onclick = function(e) {
+    hideTip();
+    const rect = mc.getBoundingClientRect();
+    const mx = (e.clientX-rect.left)*(mc.width/rect.width), my = (e.clientY-rect.top)*(mc.height/rect.height);
+    const hit = hitTest(mc, mx, my);
+    if (!hit) return;
+    if (hit.type === 'activity') {
+      showStagePanel(ACTIVITIES[hit.idx]);
+    } else {
+      showOutcomePanel(hit.code);
+      setActiveChip(hit.code);
+    }
+  };
+
+  // Build outcome chips
+  const og = document.getElementById('lModalOutcomes'); og.innerHTML = '';
+  ALL_OUTCOMES.forEach(code => {
+    const obs = s.outcomes.includes(code);
+    const chip = document.createElement('div');
+    chip.className = 'outcome-chip' + (obs?' observed':'');
+    chip.innerHTML = `<div class="outcome-dot"></div>${code}`;
+    chip.dataset.code = code;
+    if (obs) chip.onclick = () => { showOutcomePanel(code); setActiveChip(code); };
+    og.appendChild(chip);
+  });
+
+  // Default: show summary
+  showSummaryPanel();
+  document.getElementById('learningModal').classList.add('open');
+}
+
+function setActiveChip(code) {
+  document.querySelectorAll('#lModalOutcomes .outcome-chip').forEach(c => c.classList.remove('active-chip'));
+  const chip = document.querySelector(`#lModalOutcomes [data-code="${code}"]`);
+  if (chip) chip.classList.add('active-chip');
+  lActiveChip = code;
+}
+function clearActiveChip() {
+  document.querySelectorAll('#lModalOutcomes .outcome-chip').forEach(c => c.classList.remove('active-chip'));
+  lActiveChip = null;
+}
+
+// ── RIGHT PANEL RENDERERS ────────────────────────────────────────────────────
+
+function rpanel() { return document.getElementById('lModalRight'); }
+
+function showSummaryPanel() {
+  clearActiveChip();
+  const s = lModalStudent;
+  const isEle = s.id === 'Ele';
+  const summaryText = isEle ? ELE_DATA.summary : `Detailed progress summary for ${s.id} will appear here once reflections are completed.`;
+
+  rpanel().innerHTML = `
+    <div class="rp-breadcrumb"><span onclick="showSummaryPanel()">${s.id}</span></div>
+    <div class="rp-summary-title">Progress Overview</div>
+    <div class="rp-summary">${summaryText}</div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:10px">At a glance</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${s.actScores.map((sc,i)=> sc!==null ? `<div style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:11px"><div style="font-weight:500;color:var(--ink)">${ACT_SHORT[i]}</div><div style="color:${sc>=3.5?'var(--green)':sc>=2.5?'var(--gold)':'#E8756A'};margin-top:1px">${levelLabel(sc)}</div></div>` : '').join('')}
+      </div>
+    </div>`;
+}
+
+function showStagePanel(stage) {
+  clearActiveChip();
+  const s = lModalStudent;
+  const isEle = s.id === 'Ele';
+  const data = isEle && ELE_DATA.actSummaries[stage];
+  const actIdx = ACTIVITIES.indexOf(stage);
+  const score = s.actScores[actIdx];
+
+  rpanel().innerHTML = `
+    <div class="rp-breadcrumb">
+      <span onclick="showSummaryPanel()">${s.id}</span>
+      <span class="sep">›</span>
+      <span>${stage}</span>
+    </div>
+    <div class="rp-stage-badge">${stage} · ${levelLabel(score)}</div>
+    <div class="rp-summary-title">Stage Summary</div>
+    <div class="rp-summary" style="margin-bottom:20px">${data ? data.summary : `Evidence for ${stage} will appear as reflections are documented.`}</div>
+    ${data ? `
+    <div style="border-top:1px solid var(--border);padding-top:16px">
+      <div class="evidence-group-title">Corresponding Evidence</div>
+      ${renderEvidenceList(data.evidence, stage)}
+    </div>` : ''}`;
+}
+
+function showOutcomePanel(code) {
+  const s = lModalStudent;
+  const isEle = s.id === 'Ele';
+  const meta = OUTCOME_META[code] || {};
+  const data = isEle && ELE_DATA.outcomeSummaries[code];
+  const tagCount = isEle ? (ELE_TAG_COUNTS[code]||0) : 0;
+
+  rpanel().innerHTML = `
+    <div class="rp-breadcrumb">
+      <span onclick="showSummaryPanel()">${s.id}</span>
+      <span class="sep">›</span>
+      <span>${code}</span>
+    </div>
+    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid var(--green-mid);border-radius:8px;padding:5px 10px;margin-bottom:12px">
+      <span style="font-size:12px;font-weight:600;color:var(--green)">${code}</span>
+      <span style="font-size:10px;color:var(--ink-muted)">× ${tagCount} tagged</span>
+    </div>
+    <div class="rp-outcome-title">${meta.title||code}</div>
+    <div class="rp-outcome-desc">${data ? data.desc : 'Full outcome description available in curriculum framework.'}</div>
+    ${data ? `
+    <div style="border-top:1px solid var(--border);padding-top:16px">
+      <div class="evidence-group-title">Corresponding Evidence</div>
+      ${renderEvidenceList(data.evidence, code)}
+    </div>` : ''}`;
+}
+
+function renderEvidenceList(items, context) {
+  if (!items || items.length === 0) return '<div style="font-size:12px;color:var(--ink-muted);font-style:italic">No evidence documented yet.</div>';
+
+  // Group into pairs: reflection + artifact
+  let html = '';
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    const isInteractive = item.interactive;
+    const iconClass = item.type === 'reflection' ? 'ei-refl' : 'ei-artifact';
+    const icon = item.type === 'reflection' ? '📝' : '🎬';
+    const label = item.type === 'reflection' ? item.label + ': ' + item.date : item.label + ': ' + item.ref;
+    const clickable = isInteractive ? ' clickable' : '';
+    const onclick = isInteractive
+      ? (item.type === 'reflection' ? `onclick="showDIEPanel('${item.id}','${context}')"` : `onclick="showVideoPanel('${item.id}','${context}')"`)
+      : '';
+    const arrow = isInteractive ? '<div class="evidence-arrow">›</div>' : '';
+    html += `<div class="evidence-item${clickable}" ${onclick}>
+      <div class="evidence-icon ${iconClass}">${icon}</div>
+      <div><div class="evidence-label">${label}</div><div class="evidence-meta">${isInteractive?'Click to view':'View in full evidence log'}</div></div>${arrow}
+    </div>`;
+  }
+  return html;
+}
+
+function showDIEPanel(reflId, context) {
+  const s = lModalStudent;
+  const refl = ELE_DATA.reflection4; // only R4 has full data
+
+  rpanel().innerHTML = `
+    <div class="die-back" onclick="restoreContext('${context}')">← Back to evidence</div>
+    <div class="rp-breadcrumb" style="margin-top:-4px;margin-bottom:16px">
+      <span onclick="showSummaryPanel()">${s.id}</span>
+      <span class="sep">›</span>
+      <span onclick="restoreContext('${context}')">${context}</span>
+      <span class="sep">›</span>
+      <span>${refl.label||'Reflection 4'}</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <div class="rp-stage-badge">${refl.stage}</div>
+      <div style="font-size:11px;color:var(--ink-muted)">${refl.date} · ${refl.student}</div>
+    </div>
+
+    <div class="die-section">
+      <div class="die-section-label">📋 Describe</div>
+      <div class="die-text">${refl.describe}</div>
+    </div>
+    <div class="die-section">
+      <div class="die-section-label">💡 Interpret</div>
+      <div class="die-text">${refl.interpret}</div>
+    </div>
+    <div class="die-section">
+      <div class="die-section-label">⭐ Evaluate</div>
+      ${refl.evaluate.map(ev=>`<div class="die-eval-item"><div class="die-eval-code">${ev.code}</div><div><strong>${ev.level}</strong> — ${ev.reason}</div></div>`).join('')}
+    </div>`;
+}
+
+function showVideoPanel(artId, context) {
+  const s = lModalStudent;
+  rpanel().innerHTML = `
+    <div class="die-back" onclick="restoreContext('${context}')">← Back to evidence</div>
+    <div class="rp-breadcrumb" style="margin-top:-4px;margin-bottom:16px">
+      <span onclick="showSummaryPanel()">${s.id}</span>
+      <span class="sep">›</span>
+      <span onclick="restoreContext('${context}')">${context}</span>
+      <span class="sep">›</span>
+      <span>Artifact 4</span>
+    </div>
+    <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px">Classroom Observation Recording</div>
+    <div class="artifact-card" id="videoCard" onclick="playArtifact()">
+      <div class="artifact-play-btn"><div class="artifact-play-tri"></div></div>
+      <div class="artifact-label"><strong>Livv – speaking activity – 2011</strong>Teacher Ana · G2 · 20 Nov 2025</div>
+    </div>
+    <div style="font-size:11px;color:var(--ink-muted);margin-bottom:16px">Click the card to play · 2:34 min</div>
+    <div style="background:var(--green-light);border:1px solid var(--green-mid);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--green-mid);color:var(--ink-light)">
+      <div style="font-weight:500;color:var(--green);margin-bottom:4px">Connected to this artifact</div>
+      Reflection 4 — 20/11/2025 · SP01 × 1, SP02 × 1, AT01 × 1
+    </div>`;
+}
+
+function playArtifact() {
+  const card = document.getElementById('videoCard');
+  if (!card) return;
+  // Animate as playing (demo — no real video)
+  card.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,211,102,0.9);display:flex;align-items:center;justify-content:center">
+        <div style="width:10px;height:10px;background:white;border-radius:2px"></div>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.6)">Playing · 2:34</div>
+      <div style="width:80%;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden">
+        <div id="artProg" style="height:100%;background:#25D366;width:0%;transition:width 4s linear"></div>
+      </div>
+    </div>`;
+  setTimeout(()=>{ const p=document.getElementById('artProg'); if(p){p.style.width='100%';}},50);
+}
+
+function restoreContext(context) {
+  // Figure out if it's a stage or outcome
+  if (ACTIVITIES.includes(context)) {
+    showStagePanel(context);
+  } else if (Object.keys(OUTCOME_META).includes(context)) {
+    showOutcomePanel(context);
+    setActiveChip(context);
+  } else {
+    showSummaryPanel();
+  }
+}
+
+function closeLModal() { document.getElementById('learningModal').classList.remove('open'); hideTip(); }
+document.getElementById('learningModal').addEventListener('click',function(e){ if(e.target===this) closeLModal(); });
+
+// ═══════════════════════════════════════════════
+// FAMILY ENGAGEMENT SUNBURST
+// ═══════════════════════════════════════════════
+
+function drawFamilySunburst(canvas, family) {
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2;
+  const n=family.wraps.length, segAngle=(2*Math.PI)/n, gap=0.06;
+  const holeR=W*0.13, inner=W*0.24, mid=W*0.35, outer=W*0.46;
+  ctx.clearRect(0,0,W,H);
+  ctx.beginPath(); ctx.arc(cx,cy,holeR,0,2*Math.PI); ctx.fillStyle='#FAF7F2'; ctx.fill();
+  canvas._segments=[]; canvas._cx=cx; canvas._cy=cy;
+
+  family.wraps.forEach((w,i)=>{
+    const sA=-Math.PI/2+i*segAngle+gap/2, eA=sA+segAngle-gap;
+    const lv=LEVELS[w.level];
+    const col=lv.colorA(0.9), colMid=w.opened?lv.colorA(0.65):LEVELS.unseen.colorA(0.3);
+    const colIn=w.interaction?lv.colorA(0.4):LEVELS.unseen.colorA(0.15);
+
+    const arc=(r1,r2,fill)=>{
+      ctx.beginPath(); ctx.moveTo(cx+r1*Math.cos(sA),cy+r1*Math.sin(sA));
+      ctx.arc(cx,cy,r2,sA,eA); ctx.arc(cx,cy,r1,eA,sA,true); ctx.closePath();
+      ctx.fillStyle=fill; ctx.fill(); ctx.strokeStyle='#FAF7F2'; ctx.lineWidth=1.5; ctx.stroke();
+    };
+    arc(mid,outer,col); arc(inner,mid,colMid); arc(holeR,inner,colIn);
+
+    // W label
+    const lr=(mid+outer)/2, mA=(sA+eA)/2;
+    ctx.save(); ctx.translate(cx+lr*Math.cos(mA),cy+lr*Math.sin(mA)); ctx.rotate(mA+Math.PI/2);
+    ctx.font=`500 ${W*0.05}px DM Sans`; ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.textAlign='center';
+    ctx.fillText('W'+(i+1),0,4); ctx.restore();
+
+    canvas._segments.push({wrapIdx:i,ring:'outer',r1:mid,r2:outer,startA:sA,endA:eA});
+    canvas._segments.push({wrapIdx:i,ring:'middle',r1:inner,r2:mid,startA:sA,endA:eA});
+    canvas._segments.push({wrapIdx:i,ring:'inner',r1:holeR,r2:inner,startA:sA,endA:eA});
+  });
+}
+
+function fOverallPill(family) {
+  if (family.wraps.some(w=>w.level==='action')) return ['pill-action','🔴 Needs attention'];
+  if (family.wraps.some(w=>w.level==='champion')) return ['pill-champion','🟣 Champion'];
+  return ['pill-ok','✓ Engaged'];
+}
+
+function buildFamilyGrid() {
+  const grid=document.getElementById('familyGrid'); grid.innerHTML='';
+  families.forEach(f=>{
+    const [pc,pt]=fOverallPill(f);
+    const card=document.createElement('div'); card.className='sunburst-card';
+    card.innerHTML=`<div class="card-pill ${pc}">${pt}</div><canvas width="160" height="160" id="fc_${f.id}"></canvas><div class="student-name-label">${f.id}</div><div class="caregiver-label">${f.caregiver}</div>`;
+    card.onclick=()=>openFModal(f.id);
+    grid.appendChild(card);
+    requestAnimationFrame(()=>{ const c=document.getElementById('fc_'+f.id); drawFamilySunburst(c,f); });
+  });
+}
+
+// ─── FAMILY MODAL ────────────────────────────
+let fModalFamily=null;
+
+function openFModal(id) {
+  fModalFamily=families.find(f=>f.id===id);
+  if (!fModalFamily) return;
+  const f=fModalFamily;
+  document.getElementById('fModalAvatar').textContent=f.id[0];
+  document.getElementById('fModalName').textContent=f.id;
+  document.getElementById('fModalMeta').textContent=`${f.caregiver} · Juniors G2`;
+
+  const mc=document.getElementById('fModalCanvas');
+  drawFamilySunburst(mc,f);
+  mc.onmousemove=function(e){
+    const rect=mc.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(mc.width/rect.width), my=(e.clientY-rect.top)*(mc.height/rect.height);
+    const hit=hitTest(mc,mx,my);
+    if (hit) {
+      const w=f.wraps[hit.wrapIdx];
+      let text='';
+      if (hit.ring==='outer') text=`${w.label} · ${LEVELS[w.level].name}`;
+      else if (hit.ring==='middle') text=w.opened?`Opened · ${w.openedAt} · ${w.openCount}x`:'Not opened';
+      else text=w.interaction?`Interacted · ${w.interaction.type}`:'No interaction';
+      showTip(e,text);
+    } else hideTip();
+  };
+  mc.onmouseleave=hideTip;
+  mc.onclick=function(e){
+    const rect=mc.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(mc.width/rect.width), my=(e.clientY-rect.top)*(mc.height/rect.height);
+    const hit=hitTest(mc,mx,my);
+    if (hit) showFWrapDetail(hit.wrapIdx);
+  };
+
+  const wl=document.getElementById('fWrapList'); wl.innerHTML='';
+  f.wraps.forEach((w,i)=>{
+    const row=document.createElement('div'); row.className='wrap-row'; row.id='fwr_'+i;
+    row.innerHTML=`<div class="wrap-dot" style="background:${LEVELS[w.level].color}"></div><div class="wrap-row-name">${w.label}</div><div class="wrap-row-date">${w.date}</div>`;
+    row.onclick=()=>showFWrapDetail(i);
+    wl.appendChild(row);
+  });
+
+  document.getElementById('fWrapDetail').innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--ink-muted);font-size:13px;padding:40px 0">← Select a wrap to view details</div>`;
+  document.getElementById('familyModal').classList.add('open');
+}
+
+function showFWrapDetail(idx) {
+  if (!fModalFamily) return;
+  const w=fModalFamily.wraps[idx];
+  document.querySelectorAll('.wrap-row').forEach((r,i)=>r.classList.toggle('selected',i===idx));
+
+  const waveBars=()=>{let b='';for(let i=0;i<28;i++){const h=Math.max(3,4+Math.sin(i*0.5)*6+(i%3)*1.5);b+=`<div class="waveform-bar" style="height:${h}px"></div>`;}return b;};
+
+  let intHTML='';
+  if (w.interaction) {
+    const int=w.interaction;
+    if (int.type==='audio') {
+      const mm=Math.floor(int.duration/60), ss=int.duration%60;
+      intHTML=`<div class="int-label">Family response</div><div class="audio-bubble"><div class="play-dot"><div class="play-tri"></div></div><div class="waveform">${waveBars()}</div><div style="font-size:11px;color:#7faa7f;flex-shrink:0">${mm}:${ss<10?'0':''}${ss}</div></div>${int.shared?'<div style="font-size:11px;color:var(--champion);margin-top:4px">🟣 Shared the Karen Mapp quote</div>':''}`;
+    } else if (int.type==='text') {
+      intHTML=`<div class="int-label">Family message</div><div class="wa-bubble">${int.text}<div class="wa-time">✓✓</div></div>`;
+    } else if (int.type==='emoji') {
+      intHTML=`<div class="int-label">Family reaction</div><div style="font-size:32px;margin:6px 0 2px">${int.emoji}</div><div style="font-size:11px;color:var(--ink-muted)">Emoji reaction</div>`;
+    }
+  } else {
+    intHTML=`<div style="font-size:12px;color:var(--ink-muted);font-style:italic">No interaction recorded for this wrap.</div>`;
+  }
+
+  const openedHTML=w.opened
+    ?`<div class="seg-info"><div class="seg-info-title">Opened</div><div class="seg-info-value">${w.openedAt}</div><div class="seg-info-meta">Viewed ${w.openCount} time${w.openCount>1?'s':''}</div></div>`
+    :`<div class="seg-info" style="border-color:var(--unseen-border)"><div class="seg-info-title">Status</div><div class="seg-info-value" style="color:var(--unseen)">Not opened</div><div class="seg-info-meta">Message delivered but not read</div></div>`;
+
+  document.getElementById('fWrapDetail').innerHTML=`
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div style="font-family:'Playfair Display',serif;font-size:16px">${w.label}</div>
+        <div class="level-badge badge-${w.level}">${LEVELS[w.level].name}</div>
+      </div>
+      <div class="montage-preview" style="height:140px" id="mp_${idx}">
+        <div class="montage-label">COLLECTIVE</div>
+        <div class="montage-center">
+          <div class="montage-play"><div class="montage-play-tri"></div></div>
+          <div class="montage-title">${w.label} · ${fModalFamily.id}</div>
+          <div class="montage-sub">Teacher Ana · G2 · ${w.date}</div>
+        </div>
+        <div class="montage-dots">
+          ${[0,1,2,3,4].map(()=>'<div class="montage-dot-el"></div>').join('')}
+        </div>
+        <div class="montage-progress"><div class="montage-progress-fill" id="mpf_${idx}"></div></div>
+      </div>
+      <div class="caption-card">${w.caption}<div class="caption-attr">— Teacher Ana, G2</div></div>
+      <div class="divider"></div>
+      ${openedHTML}
+      <div style="margin-top:12px">${intHTML}</div>
+    </div>`;
+
+  const mp=document.getElementById('mp_'+idx);
+  if (mp) mp.onclick=function(){
+    const fill=document.getElementById('mpf_'+idx);
+    const dots=mp.querySelectorAll('.montage-dot-el');
+    if(fill){ fill.style.transition='width 4s linear'; fill.style.width='100%'; dots.forEach((d,i)=>setTimeout(()=>{d.style.background='#25D366';},i*800)); }
+  };
+}
+
+function closeFModal() { document.getElementById('familyModal').classList.remove('open'); hideTip(); }
+document.getElementById('familyModal').addEventListener('click',function(e){ if(e.target===this) closeFModal(); });
+
+// ═══════════════════════════════════════════════
+// ADD MODAL
+// ═══════════════════════════════════════════════
+
+function openAddModal()  { document.getElementById('addModal').classList.add('open'); }
+function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+document.getElementById('addModal').addEventListener('click',function(e){ if(e.target===this) closeAddModal(); });
+
+// ─── Group tab toggle ─────────────────────────
+document.querySelectorAll('.group-tab').forEach(tab=>{
+  tab.onclick=function(){ document.querySelectorAll('.group-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active'); };
+});
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+
+buildLearningGrid();
+buildFamilyGrid();
+</script>
+</body>
+</html>
